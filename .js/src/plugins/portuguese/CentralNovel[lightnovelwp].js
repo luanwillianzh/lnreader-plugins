@@ -424,12 +424,22 @@ class LightNovelWPPlugin {
       }
     }
 
+    const subtitleMatch = html.match(
+      /<div[^>]*class="cat-series"[^>]*>([^]*?)<\/div>/
+    );
+    const subtitle = subtitleMatch
+      ? subtitleMatch[1].replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim()
+      : "";
+
     const content = html.match(
       /<div.*?class="epcontent ([^]*?)<div.*?class="?bottomnav/g
     );
     const paragraphs = content ? content[0].match(/<p[^>]*>([^]*?)<\/p>/g) : null;
     const body = paragraphs ? paragraphs.join("\n") : "";
-    return (title ? "<h1>" + title + "</h1>\n\n" : "") + body;
+
+    let header = title ? "<h1>" + title + "</h1>" : "";
+    if (subtitle) header += "<h2>" + subtitle + "</h2>";
+    return (header ? header + "\n\n" : "") + body;
   }
 
   async searchNovels(query, page) {
@@ -445,7 +455,7 @@ const plugin = new LightNovelWPPlugin({
   id: "centralnovel",
   sourceSite: "https://centralnovel.com/",
   sourceName: "Central Novel",
-  options: { lang: "Portuguese", reverseChapters: true, versionIncrements: 1 },
+  options: { lang: "Portuguese", reverseChapters: true, versionIncrements: 2 },
   filters: {
     "genre[]": {
       type: "Checkbox",
